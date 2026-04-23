@@ -2,6 +2,7 @@ package com.example.movies.service;
 
 import com.example.movies.dto.Movie;
 import com.example.movies.dto.MovieResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -11,14 +12,17 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
 public class MovieService {
+
     private final WebClient webClient;
 
-    public MovieService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("https://jsonmock.hackerrank.com/api/moviesdata/search/").build();
+    private final ExecutorService executor;
+
+    public MovieService(WebClient.Builder webClientBuilder, @Value("${movie.api.base-url}") String baseUrl, ExecutorService executor) {
+        this.executor = executor;
+        this.webClient = webClientBuilder.baseUrl( baseUrl).build();
     }
 
     public MovieResponse getMoviesWithParams(String title, Integer year, Integer page) {
@@ -35,10 +39,9 @@ public class MovieService {
 
     public List<Movie> getAllMoviesMultithreaded() {
         MovieResponse firstPage = getMoviesWithParams(null, null, 1);
-        int totalPages = firstPage.getTotal_pages();
+        int totalPages = firstPage.getTotalPages();
 
         List<Movie> allMovies = new CopyOnWriteArrayList<>(firstPage.getData());
-        ExecutorService executor = Executors.newFixedThreadPool(10); // 10 parallel threads
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
         for (int i = 2; i <= totalPages; i++) {
@@ -54,7 +57,6 @@ public class MovieService {
         }
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        executor.shutdown();
 
         return allMovies;
     }

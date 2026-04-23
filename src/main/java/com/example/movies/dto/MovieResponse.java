@@ -1,5 +1,6 @@
 package com.example.movies.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -7,8 +8,10 @@ import java.util.List;
 @Data
 public class MovieResponse {
     private int page;
-    private int per_page;
+    @JsonProperty("per_page")
+    private int perPage;
     private int total;
-    private int total_pages;
+    @JsonProperty("total_pages")
+    private int totalPages;
     private List<Movie> data;
 }

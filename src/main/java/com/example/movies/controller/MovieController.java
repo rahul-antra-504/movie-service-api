@@ -24,10 +24,10 @@ public class MovieController {
         return movieService.getAllMoviesMultithreaded();
     }
 
-    @GetMapping(value = "/movies", params = {"Title"})
+    @GetMapping(value = "/movies", params = {"title"})
     public MovieResponse getMoviesByQuery(
-            @RequestParam("Title") String title,
-            @RequestParam(value = "Year", required = false) Integer year,
+            @RequestParam("title") String title,
+            @RequestParam(value = "year", required = false) Integer year,
             @RequestParam(value = "page", required = false) Integer page) {
         return movieService.getMoviesWithParams(title, year, page);
     }
