@@ -34,7 +34,7 @@ public class MovieController {
     public ResponseEntity<MovieResponse> getMoviesByQuery(
             @RequestParam("title") String title,
             @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "page", required = false) Integer page) {
+            @RequestParam(value = "page", defaultValue = "1", required = false) Integer page) {
         MovieResponse response =  movieService.getMoviesWithParams(title, year, page);
 
         if (response == null || response.getData() == null || response.getData().isEmpty()) {
